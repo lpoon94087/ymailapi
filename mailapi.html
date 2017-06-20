@@ -83,6 +83,8 @@ function doQuery() {
     } else {
         document.apiForm.q.disabled = true;
     }
+    var method = document.getElementById("methodId").value;
+    document.apiForm.method = method;
     return true;
 }
 
@@ -209,6 +211,14 @@ Mailbox Attribute:
     <option value="cardConversationId">cardConvesationId</option>
 </select>
 </div>
+    
+<div id="methodDiv">
+<p>
+Method: 
+    <input type="radio" id="methodId" name="method" value="GET" checked>GET<BR>
+    <input type="radio" id="methodId" name="method" value="POST">POST<BR>
+</div>
+    
 </form>
 <form name="apiForm" id="apiForm" action="bogus" target="_blank">
 <input name="appid" type="hidden" value="DebugAdmin">
