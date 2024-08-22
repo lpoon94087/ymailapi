@@ -70,19 +70,27 @@
             document.theForm.action = endpoint;
         }
 
-        function doQuery() {
+        function doQuery(event) {
+            event.preventDefault();
             updateEndpoint();
-            document.apiForm.wssid.value = document.theForm.wssid.value;
-            document.apiForm.action = document.theForm.action;
-            var api = document.getElementById("apiId").value;
+            var endpoint = document.getElementById("endpoint").value;
+            var wssid = document.getElementById("wssId").value;
+            var query = document.getElementById("q").value;
 
-            if (api == "listmessages") {
-                document.apiForm.q.value = document.theForm.q.value;
-                document.apiForm.q.disabled = false;
-            } else {
-                document.apiForm.q.disabled = true;
-            }
-            return true;
+            fetch(endpoint, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + wssid,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("response").innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById("response").innerText = 'Error: ' + error;
+            });
         }
     </script>
 </head>
@@ -92,8 +100,8 @@
         <p class="text-muted">
             Enter submit to get "wssid" and enter into form. Then submit again to get "mailboxid" and enter into form. After that you can select an API and enter appropriate parameters.
         </p>
-        <form name="theForm" id="theForm" action="bogus" class="mb-4">
-           <div class="form-group">
+        <form name="theForm" id="theForm" class="mb-4" onsubmit="doQuery(event);">
+            <div class="form-group">
                 <label for="endpoint">Endpoint:</label>
                 <input name="endpoint" type="text" readonly="readonly" class="form-control" value=" https://apis.mail.yahoo.com/ws/v3/mailboxes/" id="endpoint">
             </div>
@@ -155,6 +163,7 @@
                     <option value="web.ccOnSend">web.ccOnSend</option>
                     <option value="web.hideAd">web.hideAd</option>
                     <option value="web.newsCategory">web.newsCategory</option>
+                    <option value="web.composeShowCc">web.composeShowCc</option>
                     <option value="web.composeShowBcc">web.composeShowBcc</option>
                     <option value="web.suppressEmptyFolderVideo">web.suppressEmptyFolderVideo</option>
                     <option value="web.searchSortBy">web.searchSortBy</option>
@@ -204,19 +213,22 @@
                     <option value="cardConversationId">cardConvesationId</option>
                 </select>
             </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-        <form name="apiForm" id="apiForm" action="bogus" target="_blank" class="mb-4">
-            <input name="appid" type="hidden" value="YMailNorrin">
-            <input name="wssid" type="hidden" value="">
-            <input name="q" type="hidden" value="" disabled="true">
-            <button type="submit" class="btn btn-primary" onClick="return doQuery();">Submit</button>
-        </form>
+        <div id="response" class="mt-4 p-3 border rounded" style="background-color: #f8f9fa;"></div>
     </div>
     <script>
         onApiChange();
     </script>
     <script src=" https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src=" https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+
+
+
+
+
