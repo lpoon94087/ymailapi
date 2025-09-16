@@ -317,8 +317,8 @@
                     <div id="mailboxAttrDiv" class="dynamic-section hidden">
                         <div class="form-group">
                             <label for="mailboxAttrId">Mailbox Attribute</label>
-                            <select name="mailboxAttrSelect" id="mailboxAttrId" onchange="if(this.selectedIndex) onApiChange();">
-                                <option value="">---</option>
+                            <input list="mailboxAttributes" name="mailboxAttrSelect" id="mailboxAttrId" placeholder="Select or enter custom attribute..." onchange="onApiChange();" oninput="onApiChange();">
+                            <datalist id="mailboxAttributes">
                                 <option value="activity">activity</option>
                                 <option value="all.tlr">all.tlr</option>
                                 <option value="all.events">all.events</option>
@@ -388,9 +388,10 @@
                                 <option value="web.unsubscribeTimestamp">web.unsubscribeTimestamp</option>
                                 <option value="web.useRichText">web.useRichText</option>
                                 <option value="web.ymv">web.ymv</option>
-                            </select>
+                            </datalist>
                         </div>
                     </div>
+                </div>
 
                 <div class="button-container">
                     <button type="submit" class="btn btn-primary" onclick="return doQuery();">
