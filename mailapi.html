@@ -1,225 +1,552 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<title>Yahoo Mail REST API</title>
-
-<script>
-function onApiChange() {
-    // Hide or show certain parameters depeding on API
-    var api = document.getElementById("apiId").value;
-    var lm = "none"; // Hide
-    var ma = "none"; // Hide
-    var gm = "none"; // Hide
-    if (api == "listmessages") {
-        lm = "block"; // Show
-    } else if (api.startsWith("getmessage")) {
-        gm = "block"; // Show
-    } else if (api == "mailboxattributes") {
-        ma = "block"; // Show
-    }
-    document.getElementById("queryDiv").style.display = lm;
-    document.getElementById("mailboxAttrDiv").style.display = ma;
-    document.getElementById("messageIdDiv").style.display = gm;
-
-    updateEndpoint();
-}
-
-function updateEndpoint() {
-    var base = "https://apis.mail.yahoo.com/ws/v3/mailboxes";
-    var api = document.getElementById("apiId").value;
-    var endpoint = base;
-    var mailboxId = document.getElementById("mailboxId").value;
-    var messageId = document.getElementById("messageId").value;
-    if (mailboxId != "") {
-        endpoint += "/@.id==" + mailboxId;
-
-        if (api == "listmessages") {
-            var query = document.getElementById("q").value;
-            if (query != "") {
-                endpoint += "/messages/@.select==q";
-            }
-        } else if (api == "listaccounts") {
-            endpoint += "/accounts";
-        } else if (api == "listalerts") {
-            endpoint += "/alerts";
-        } else if (api == "listsavedsearches") {
-            endpoint += "/savedsearches";
-        } else if (api == "listfolders") {
-            endpoint += "/folders";
-        } else if (api == "listdecos") {
-            endpoint += "/decos";
-        } else if (api == "mailboxattributes") {
-            var mboxAttrId = document.getElementById("mailboxAttrId").value;
-            endpoint += "/attributes/@.id==" + mboxAttrId;
-        } else if (api == "getmessagemetadata") {
-            endpoint += "/messages/@.id==" +  messageId;
-        } else if (api == "getmessagesimplebody") {
-            endpoint += "/messages/@.id==" +  messageId + "/content/simplebody";
-        } else if (api == "getmessagesimplebodysecure") {
-            endpoint += "/messages/@.id==" +  messageId + "/content/simplebody/secure";
-        } else if (api == "getmessagesimplebodyfull") {
-            endpoint += "/messages/@.id==" +  messageId + "/content/simplebody/full";
-        } else if (api == "getmessagesimplebodyfullsecure") {
-            endpoint += "/messages/@.id==" +  messageId + "/content/simplebody/full/secure";
-        } else if (api == "getmessageraw") {
-            endpoint += "/messages/@.id==" +  messageId + "/content/raw";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yahoo Mail REST API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    }
-    document.getElementById("endpoint").value = endpoint;
-    document.theForm.action = endpoint;
-}
 
-function doQuery() {
-    updateEndpoint();
-    // Copy only relevant parameters to apiForm
-    document.apiForm.wssid.value = document.theForm.wssid.value;
-    document.apiForm.action = document.theForm.action;
-    var api = document.getElementById("apiId").value;
-     
-    if (api == "listmessages") {
-        document.apiForm.q.value = document.theForm.q.value;
-        document.apiForm.q.disabled = false;
-    } else {
-        document.apiForm.q.disabled = true;
-    }
-    return true;
-}
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-</script>
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
 
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+            margin-right: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input[readonly] {
+            background: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        .dynamic-section {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-section.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-color: #667eea;
+        }
+
+        .endpoint-display {
+            background: #1a202c;
+            color: #68d391;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border-left: 4px solid #68d391;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.ready {
+            background: #10b981;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .main-card {
+                padding: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-<h3>Mail V3 API using Y&T cookies</h3>
-<p>
-<form name="theForm" id="theForm" action="bogus">
-<i>
-Enter submit to get "wssid" and enter into form.  Then submit again to get "mailboxid" and enter into form.  After that you can select an API and enter appropriate parameters.
-</i>
-<p>
-Endpoint:
-<input name="endpoint" type="text" readonly="readonly" size="200" value="https://apis.mail.yahoo.com/ws/v3/mailboxes/" id="endpoint"><BR>
-<input name="appid" type="hidden" size="50" value="YMailNorrin"><BR>
-WSSID: <input id="wssId" name="wssid" type="text" size="50" value=""><BR>
-<div id="mailboxIdDiv">
-MailboxId: <input name="mailboxId" id="mailboxId" type="text" size="150" value="" ><BR>
-</div>
-<p>
-<div id="apiDiv">
-API:
-<select name="api" id="apiId"  onChange="if(this.selectedIndex) onApiChange();">
-    <option value="">---</option>
-    <option value="listmessages">List Messages</option>
-    <option value="listfolders">List Folders</option>
-    <option value="listaccounts">List Account</option>
-    <option value="mailboxattributes">List Mailbox Attributes</option>
-    <option value="listalerts">List Alerts</option>
-    <option value="listsavedsearches">List SavedSearches</option>
-    <option value="listdecos">List Decos</option>
-    <option value="getmessagemetadata">Get Message Metadata</option>
-    <option value="getmessageraw">Get Message Raw</option>
-    <option value="getmessagesimplebody">Get Message SimpleBody</option>
-    <option value="getmessagesimplebodysecure">Get Message SimpleBody Secure</option>
-    <option value="getmessagesimplebodyfull">Get Message SimpleBody Full</option>
-    <option value="getmessagesimplebodyfullsecure">Get Message SimpleBody Full Secure</option>
-</select>
-</div>
+    <div class="container">
+        <div class="header">
+            <h1>Mail V3 API Interface</h1>
+            <p>Modern REST API testing tool for Yahoo Mail services</p>
+        </div>
 
-<div id="queryDiv">
-<p>
-Query: <input type="text" id="q" name="q" size="150" value="folderId:1 debug:1"  ><BR>
-</div>
+        <div class="main-card">
+            <form name="theForm" id="theForm" action="bogus">
+                <input name="appid" type="hidden" value="YMailNorrin">
+                <input name="mailboxId" id="mailboxId" type="hidden" value="mailboxes%5B%5D%7Cselect%28.isSelected%3D%3Dtrue%29.id">
+                
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="status-indicator ready" id="connectionStatus"></span>
+                        API Configuration
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endpoint">API Endpoint</label>
+                        <textarea name="endpoint" id="endpoint" rows="2" readonly class="endpoint-display">https://apis.mail.yahoo.com/ws/v3/mailboxes/</textarea>
+                    </div>
+                </div>
 
-<div id="messageIdDiv">
-<p>
-Message Id: <input type="text" id="messageId" name="msgid" size="150" value="" onChange="onApiChange();" ><BR>
-</div>
+                <div class="form-section">
+                    <div class="section-title">API Parameters</div>
+                    
+                    <div class="form-group">
+                        <label for="apiId">Select API Endpoint</label>
+                        <select name="api" id="apiId" onchange="if(this.selectedIndex) onApiChange();">
+                            <option value="">Choose an API endpoint...</option>
+                            <option value="listmessages">📧 List Messages</option>
+                            <option value="listfolders">📁 List Folders</option>
+                            <option value="listaccounts">👤 List Accounts</option>
+                            <option value="mailboxattributes">⚙️ Mailbox Attributes</option>
+                            <option value="listalerts">🔔 List Alerts</option>
+                            <option value="listsavedsearches">🔍 Saved Searches</option>
+                            <option value="listdecos">🎨 List Decorations</option>
+                            <option value="getmessagemetadata">📋 Message Metadata</option>
+                            <option value="getmessageraw">📄 Raw Message</option>
+                            <option value="getmessagesimplebody">📝 Simple Body</option>
+                            <option value="getmessagesimplebodysecure">🔒 Simple Body Secure</option>
+                            <option value="getmessagesimplebodyfull">📖 Full Simple Body</option>
+                            <option value="getmessagesimplebodyfullsecure">🛡️ Full Simple Body Secure</option>
+                        </select>
+                    </div>
 
-<div id="mailboxAttrDiv">
-<p>
-Mailbox Attribute:
-<select name="mailboxAttrSelect" id="mailboxAttrId" onChange="if(this.selectedIndex) onApiChange();">
-    <option value="">---</option>
-    <option value="web.mailTabs">web.mailTabs</option>
-    <option value="web.mailPreviewPane">web.mailPreviewPane</option>
-    <option value="web.hasStationery">web.hasStationery</option>
-    <option value="web.composeFontFamily">web.composeFontFamily</option>
-    <option value="web.composeFontSize">web.composeFontSize</option>
-    <option value="web.sortOrder">web.sortOrder</option>
-    <option value="web.useRichText">web.useRichText</option>
-    <option value="web.msgPaneVisible">web.msgPaneVisible</option>
-    <option value="web.msgsListDensity">web.msgsListDensity</option>
-    <option value="web.desktopNotification">web.desktopNotification</option>
-    <option value="web.generalSnippet">web.generalSnippet</option>
-    <option value="web.enableTweet">web.enableTweet</option>
-    <option value="web.enableEnhancerLinkPreview">web.enableEnhancerLinkPreview</option>
-    <option value="web.ymv">web.ymv</option>
-    <option value="web.mailTheme">web.mailTheme</option>
-    <option value="web.ccOnSend">web.ccOnSend</option>
-    <option value="web.hideAd">web.hideAd</option>
-    <option value="web.newsCategory">web.newsCategory</option>
-    <option value="web.composeShowCc">web.composeShowCc</option>
-    <option value="web.composeShowBcc">web.composeShowBcc</option>
-    <option value="web.suppressEmptyFolderVideo">web.suppressEmptyFolderVideo</option>
-    <option value="web.searchSortBy">web.searchSortBy</option>
-    <option value="web.stationeryTheme">web.stationeryTheme</option>
-    <option value="mailOnBoard">mailOnBoard</option>
-    <option value="web.openedTabs">web.openedTabs</option>
-    <option value="web.expandedFolders">web.expandedFolders</option>
-    <option value="web.blockImages">web.blockImages</option>
-    <option value="hasAds">hasAds</option>
-    <option value="web.showCustomFolders">web.showCustomFolders</option>
-    <option value="web.actionAfterMsgMove">web.actionAfterMsgMove</option>
-    <option value="web.addUnknownContact">web.addUnknownContact</option>
-    <option value="web.showSmartViews">web.showSmartViews</option>
-    <option value="web.themeMode">web.themeMode</option>
-    <option value="web.keyTasksPanel">web.keyTasksPanel</option>
-    <option value="web.breakingNews">web.breakingNews</option>
-    <option value="web.peopleNotification">web.peopleNotification</option>
-    <option value="web.importantNotification">web.importantNotification</option>
-    <option value="web.cancelClickOnHoverDeleteCount">web.cancelClickOnHoverDeleteCount</option>
-    <option value="web.confirmBeforeDelete">web.confirmBeforeDelete</option>
-    <option value="web.showEmailHistory">web.showEmailHistory</option>
-    <option value="web.markAsReadInterval">web.markAsReadInterval</option>
-    <option value="web.showCloudFilePermissionsDialog">web.showCloudFilePermissionsDialog</option>
-    <option value="web.autoSuggestHideFacebookFooter">web.autoSuggestHideFacebookFooter</option>
-    <option value="web.autoSuggestHideLinkedinFooter">web.autoSuggestHideLinkedinFooter</option>
-    <option value="web.hideLinkedinReconnect">web.hideLinkedinReconnect</option>
-    <option value="web.lastCalloutTimestamp">web.lastCalloutTimestamp</option>
-    <option value="web.nextCalloutTimestamp">web.nextCalloutTimestamp</option>
-    <option value="web.bccOnSend">web.bccOnSend</option>
-    <option value="popArchiveEnable">popArchiveEnable</option>
-    <option value="attachTotalSize">attachTotalSize</option>
-    <option value="enableArchive">enableArchive</option>
-    <option value="maxDeaAccounts">maxDeaAccounts</option>
-    <option value="maxFilters">maxFilters</option>
-    <option value="maxFolders">maxFolders</option>
-    <option value="maxImapInAccounts">maxImapInAccounts</option>
-    <option value="maxPopInAccounts">maxPopInAccounts</option>
-    <option value="maxSendAsAccounts">maxSendAsAccounts</option>
-    <option value="attachFileSize">attachFileSize</option>
-    <option value="blockedAddressesMax">blockedAddressesMax</option>
-    <option value="maxMigrationAccounts">maxMigrationAccounts</option>
-    <option value="web.showUnsubscribeNotification">web.showUnsubscribeNotification</option>
-    <option value="web.numUnsubscribedItems">web.numUnsubscribedItems</option>
-    <option value="web.unsubscribeTimestamp">web.unsubscribeTimestamp</option>
-    <option value="mobile.premiumExpiryDate">mobile.premiumExpiryDate</option>
-    <option value="activity">activity</option>
-    <option value="cardConversationId">cardConvesationId</option>
-</select>
-</div>
-    
-</form>
-<form name="apiForm" id="apiForm" action="bogus" target="_blank">
-<input name="appid" type="hidden" value="YMailNorrin">
-<input name="wssid" type="hidden" value="">
-<input name="q" type="hidden" value="" disabled="true" ><BR>
-<p>
-<input type="submit" value="Submit" onClick="return doQuery();" />
-</form>
-<script>
-onApiChange();
-</script>
+                    <div id="queryDiv" class="dynamic-section hidden">
+                        <div class="form-group">
+                            <label for="q">Search Query</label>
+                            <input type="text" id="q" name="q" value="folderId:1 debug:1" placeholder="Enter search parameters">
+                        </div>
+                    </div>
+
+                    <div id="messageIdDiv" class="dynamic-section hidden">
+                        <div class="form-group">
+                            <label for="messageId">Message ID</label>
+                            <input type="text" id="messageId" name="msgid" placeholder="Enter message identifier" onchange="onApiChange();">
+                        </div>
+                    </div>
+
+                    <div id="mailboxAttrDiv" class="dynamic-section hidden">
+                        <div class="form-group">
+                            <label for="mailboxAttrId">Mailbox Attribute</label>
+                            <select name="mailboxAttrSelect" id="mailboxAttrId" onchange="if(this.selectedIndex) onApiChange();">
+                                <option value="">---</option>
+                                <option value="activity">activity</option>
+                                <option value="all.tlr">all.tlr</option>
+                                <option value="all.events">all.events</option>
+                                <option value="all.tasks">all.tasks</option>
+                                <option value="attachFileSize">attachFileSize</option>
+                                <option value="attachTotalSize">attachTotalSize</option>
+                                <option value="blockedAddressesMax">blockedAddressesMax</option>
+                                <option value="cardConversationId">cardConvesationId</option>
+                                <option value="enableArchive">enableArchive</option>
+                                <option value="hasAds">hasAds</option>
+                                <option value="mailOnBoard">mailOnBoard</option>
+                                <option value="maxDeaAccounts">maxDeaAccounts</option>
+                                <option value="maxFilters">maxFilters</option>
+                                <option value="maxFolders">maxFolders</option>
+                                <option value="maxImapInAccounts">maxImapInAccounts</option>
+                                <option value="maxMigrationAccounts">maxMigrationAccounts</option>
+                                <option value="maxPopInAccounts">maxPopInAccounts</option>
+                                <option value="maxSendAsAccounts">maxSendAsAccounts</option>
+                                <option value="mobile.premiumExpiryDate">mobile.premiumExpiryDate</option>
+                                <option value="popArchiveEnable">popArchiveEnable</option>
+                                <option value="web.actionAfterMsgMove">web.actionAfterMsgMove</option>
+                                <option value="web.addUnknownContact">web.addUnknownContact</option>
+                                <option value="web.autoSuggestHideFacebookFooter">web.autoSuggestHideFacebookFooter</option>
+                                <option value="web.autoSuggestHideLinkedinFooter">web.autoSuggestHideLinkedinFooter</option>
+                                <option value="web.bccOnSend">web.bccOnSend</option>
+                                <option value="web.blockImages">web.blockImages</option>
+                                <option value="web.breakingNews">web.breakingNews</option>
+                                <option value="web.cancelClickOnHoverDeleteCount">web.cancelClickOnHoverDeleteCount</option>
+                                <option value="web.ccOnSend">web.ccOnSend</option>
+                                <option value="web.composeFontFamily">web.composeFontFamily</option>
+                                <option value="web.composeFontSize">web.composeFontSize</option>
+                                <option value="web.composeShowBcc">web.composeShowBcc</option>
+                                <option value="web.composeShowCc">web.composeShowCc</option>
+                                <option value="web.confirmBeforeDelete">web.confirmBeforeDelete</option>
+                                <option value="web.desktopNotification">web.desktopNotification</option>
+                                <option value="web.enableEnhancerLinkPreview">web.enableEnhancerLinkPreview</option>
+                                <option value="web.enableTweet">web.enableTweet</option>
+                                <option value="web.expandedFolders">web.expandedFolders</option>
+                                <option value="web.generalSnippet">web.generalSnippet</option>
+                                <option value="web.hasStationery">web.hasStationery</option>
+                                <option value="web.hideAd">web.hideAd</option>
+                                <option value="web.hideLinkedinReconnect">web.hideLinkedinReconnect</option>
+                                <option value="web.importantNotification">web.importantNotification</option>
+                                <option value="web.keyTasksPanel">web.keyTasksPanel</option>
+                                <option value="web.lastCalloutTimestamp">web.lastCalloutTimestamp</option>
+                                <option value="web.mailPreviewPane">web.mailPreviewPane</option>
+                                <option value="web.mailTabs">web.mailTabs</option>
+                                <option value="web.mailTheme">web.mailTheme</option>
+                                <option value="web.markAsReadInterval">web.markAsReadInterval</option>
+                                <option value="web.msgPaneVisible">web.msgPaneVisible</option>
+                                <option value="web.msgsListDensity">web.msgsListDensity</option>
+                                <option value="web.nextCalloutTimestamp">web.nextCalloutTimestamp</option>
+                                <option value="web.newsCategory">web.newsCategory</option>
+                                <option value="web.numUnsubscribedItems">web.numUnsubscribedItems</option>
+                                <option value="web.openedTabs">web.openedTabs</option>
+                                <option value="web.peopleNotification">web.peopleNotification</option>
+                                <option value="web.searchSortBy">web.searchSortBy</option>
+                                <option value="web.showCloudFilePermissionsDialog">web.showCloudFilePermissionsDialog</option>
+                                <option value="web.showCustomFolders">web.showCustomFolders</option>
+                                <option value="web.showEmailHistory">web.showEmailHistory</option>
+                                <option value="web.showSmartViews">web.showSmartViews</option>
+                                <option value="web.showUnsubscribeNotification">web.showUnsubscribeNotification</option>
+                                <option value="web.sortOrder">web.sortOrder</option>
+                                <option value="web.stationeryTheme">web.stationeryTheme</option>
+                                <option value="web.suppressEmptyFolderVideo">web.suppressEmptyFolderVideo</option>
+                                <option value="web.themeMode">web.themeMode</option>
+                                <option value="web.unsubscribeTimestamp">web.unsubscribeTimestamp</option>
+                                <option value="web.useRichText">web.useRichText</option>
+                                <option value="web.ymv">web.ymv</option>
+                            </select>
+                        </div>
+                    </div>
+
+                <div class="button-container">
+                    <button type="submit" class="btn btn-primary" onclick="return doQuery();">
+                        🚀 Execute API Call
+                    </button>
+                </div>
+            </form>
+
+            <form name="apiForm" id="apiForm" action="bogus" target="_blank" style="display: none;">
+                <input name="appid" type="hidden" value="YMailNorrin">
+                <input name="q" type="hidden" value="" disabled="true">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function onApiChange() {
+            const api = document.getElementById("apiId").value;
+            const queryDiv = document.getElementById("queryDiv");
+            const mailboxAttrDiv = document.getElementById("mailboxAttrDiv");
+            const messageIdDiv = document.getElementById("messageIdDiv");
+            
+            // Hide all dynamic sections
+            [queryDiv, mailboxAttrDiv, messageIdDiv].forEach(div => {
+                div.classList.add("hidden");
+                div.classList.remove("active", "fade-in");
+            });
+            
+            // Show relevant sections with animation
+            if (api === "listmessages") {
+                showSection(queryDiv);
+            } else if (api.startsWith("getmessage")) {
+                showSection(messageIdDiv);
+            } else if (api === "mailboxattributes") {
+                showSection(mailboxAttrDiv);
+            }
+            
+            updateEndpoint();
+            updateConnectionStatus();
+        }
+
+        function showSection(element) {
+            element.classList.remove("hidden");
+            element.classList.add("active", "fade-in");
+        }
+
+        function updateEndpoint() {
+            const base = "https://apis.mail.yahoo.com/ws/v3/mailboxes";
+            const api = document.getElementById("apiId").value;
+            const mailboxId = document.getElementById("mailboxId").value;
+            const messageId = document.getElementById("messageId").value;
+            let endpoint = base;
+
+            if (mailboxId !== "") {
+                endpoint += "/" + mailboxId;
+
+                switch(api) {
+                    case "listmessages":
+                        const query = document.getElementById("q").value;
+                        if (query !== "") {
+                            endpoint += "/messages/@.select==q";
+                        }
+                        break;
+                    case "listaccounts":
+                        endpoint += "/accounts";
+                        break;
+                    case "listalerts":
+                        endpoint += "/alerts";
+                        break;
+                    case "listsavedsearches":
+                        endpoint += "/savedsearches";
+                        break;
+                    case "listfolders":
+                        endpoint += "/folders";
+                        break;
+                    case "listdecos":
+                        endpoint += "/decos";
+                        break;
+                    case "mailboxattributes":
+                        const mboxAttrId = document.getElementById("mailboxAttrId").value;
+                        endpoint += "/attributes/@.id==" + mboxAttrId;
+                        break;
+                    case "getmessagemetadata":
+                        endpoint += "/messages/@.id==" + messageId;
+                        break;
+                    case "getmessagesimplebody":
+                        endpoint += "/messages/@.id==" + messageId + "/content/simplebody";
+                        break;
+                    case "getmessagesimplebodysecure":
+                        endpoint += "/messages/@.id==" + messageId + "/content/simplebody/secure";
+                        break;
+                    case "getmessagesimplebodyfull":
+                        endpoint += "/messages/@.id==" + messageId + "/content/simplebody/full";
+                        break;
+                    case "getmessagesimplebodyfullsecure":
+                        endpoint += "/messages/@.id==" + messageId + "/content/simplebody/full/secure";
+                        break;
+                    case "getmessageraw":
+                        endpoint += "/messages/@.id==" + messageId + "/content/raw";
+                        break;
+                }
+            }
+            
+            document.getElementById("endpoint").value = endpoint;
+            document.theForm.action = endpoint;
+        }
+
+        function updateConnectionStatus() {
+            const statusIndicator = document.getElementById("connectionStatus");
+            const api = document.getElementById("apiId").value;
+            
+            // Always show ready since we have hardcoded mailbox ID
+            if (api) {
+                statusIndicator.classList.add("ready");
+            } else {
+                statusIndicator.classList.remove("ready");
+            }
+        }
+
+        function doQuery() {
+            updateEndpoint();
+            
+            // Copy parameters to hidden form
+            const apiForm = document.apiForm;
+            const theForm = document.theForm;
+            
+            apiForm.action = theForm.action;
+            
+            const api = document.getElementById("apiId").value;
+            
+            if (api === "listmessages") {
+                apiForm.q.value = theForm.q.value;
+                apiForm.q.disabled = false;
+            } else {
+                apiForm.q.disabled = true;
+            }
+            
+            // Submit the hidden form
+            apiForm.submit();
+            return false; // Prevent default form submission
+        }
+
+        // Add input event listeners for real-time updates
+        document.addEventListener('DOMContentLoaded', function() {
+            ['q', 'messageId'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        updateEndpoint();
+                        updateConnectionStatus();
+                    });
+                }
+            });
+            
+            onApiChange();
+        });
+    </script>
 </body>
 </html>
