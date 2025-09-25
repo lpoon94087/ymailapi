@@ -20,9 +20,9 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1rem;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -30,49 +30,40 @@
 
         .header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 1.5rem;
         }
 
         .header h1 {
             color: white;
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .header p {
             color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .main-card {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            padding: 1.5rem;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .instructions {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-        }
-
         .form-section {
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         .section-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #2d3748;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
         }
@@ -87,7 +78,7 @@
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         label {
@@ -100,10 +91,10 @@
 
         input[type="text"], select, textarea {
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 0.5rem 0.75rem;
             border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             background: #f8fafc;
         }
@@ -134,9 +125,9 @@
         .dynamic-section {
             background: #f8fafc;
             border: 2px dashed #cbd5e0;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 1rem;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.75rem;
             transition: all 0.3s ease;
         }
 
@@ -149,25 +140,61 @@
             background: #1a202c;
             color: #68d391;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9rem;
-            padding: 1rem;
-            border-radius: 8px;
+            font-size: 0.8rem;
+            padding: 0.75rem;
+            border-radius: 6px;
             overflow-x: auto;
             border-left: 4px solid #68d391;
+        }
+
+        .curl-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            border-left: 4px solid #f093fb;
+            white-space: pre-wrap;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background: #2d3748;
+        }
+
+        .copy-button.copied {
+            background: #10b981;
         }
 
         .button-container {
             display: flex;
             gap: 1rem;
             justify-content: center;
-            margin-top: 2rem;
+            margin-top: 1rem;
         }
 
         .btn {
-            padding: 0.75rem 2rem;
+            padding: 0.6rem 1.5rem;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -175,7 +202,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            min-width: 120px;
+            min-width: 110px;
             justify-content: center;
         }
 
@@ -192,13 +219,6 @@
 
         .btn-primary:active {
             transform: translateY(0);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 1rem;
         }
 
         .status-indicator {
@@ -221,24 +241,6 @@
             100% { opacity: 1; }
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .main-card {
-                padding: 1.5rem;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .hidden {
             display: none !important;
         }
@@ -250,6 +252,43 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toggle-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .toggle-checkbox input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .advanced-sections {
+            transition: all 0.3s ease;
+        }
+
+        .advanced-sections.hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.75rem;
+            }
+            
+            .main-card {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.75rem;
+            }
         }
     </style>
 </head>
@@ -326,7 +365,7 @@
                                 <option value="attachFileSize">attachFileSize</option>
                                 <option value="attachTotalSize">attachTotalSize</option>
                                 <option value="blockedAddressesMax">blockedAddressesMax</option>
-                                <option value="cardConversationId">cardConvesationId</option>
+                                <option value="cardConversationId">cardConversationId</option>
                                 <option value="enableArchive">enableArchive</option>
                                 <option value="hasAds">hasAds</option>
                                 <option value="mailOnBoard">mailOnBoard</option>
@@ -400,6 +439,37 @@
                     <button type="submit" class="btn btn-primary" onclick="return doQuery();">
                         🚀 Execute API Call
                     </button>
+                    <button type="submit" class="btn btn-primary" onclick="return doFetchWssid();">
+                        🚀 Fetch WSSID
+                    </button>
+                </div>
+
+                <label class="toggle-checkbox">
+                    <input type="checkbox" id="advancedToggle" onchange="toggleAdvanced()">
+                    Advanced Options
+                </label>
+
+                <div id="advancedSections" class="advanced-sections hidden">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label for="wssid">WSSID</label>
+                            <input type="text" id="wssid" name="wssid" placeholder="Enter wssid for POSTs">
+                        </div>
+                        <div class="form-group">
+                            <label for="postBody">POST Body</label>
+                            <textarea id="postBody" rows="4" placeholder="JSON post body goes here">JSON post body goes here</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-title">CURL Command</div>
+                        <div class="form-group">
+                            <div style="position: relative;">
+                                <textarea id="curlCommand" readonly class="curl-display" rows="6">Select an API endpoint to generate the CURL command</textarea>
+                                <button type="button" class="copy-button" onclick="copyCurlCommand()">Copy</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
 
@@ -434,6 +504,7 @@
             
             updateEndpoint();
             updateConnectionStatus();
+            updateCurlCommand();
         }
 
         function showSection(element) {
@@ -502,6 +573,87 @@
             document.theForm.action = endpoint;
         }
 
+        function updateCurlCommand() {
+            const api = document.getElementById("apiId").value;
+            const endpoint = document.getElementById("endpoint").value;
+            const curlTextarea = document.getElementById("curlCommand");
+            const postBody = document.getElementById("postBody").value.trim();
+            
+            if (!api) {
+                curlTextarea.value = "Select an API endpoint to generate the CURL command";
+                return;
+            }
+            
+            // Build URL with all parameters
+            let url = endpoint;
+            const params = new URLSearchParams();
+            
+            // Always add appid
+            params.append('appid', 'YMailNorrin');
+            // Always wssid
+            const wssid = document.getElementById("wssid").value;
+            if (wssid) {
+                params.append('wssid', wssid);
+            }
+
+            // Add query parameter for listmessages
+            if (api === "listmessages") {
+                const query = document.getElementById("q").value;
+                if (query) {
+                    params.append('q', query);
+                }
+            }
+            
+            // Construct final URL
+            const queryString = params.toString();
+            if (queryString) {
+                url += (url.includes('?') ? '&' : '?') + queryString;
+            }
+            
+            let curlCommand = `curl -b cookies.txt \\
+  -H "Accept: application/json" \\
+  -H "Content-Type: application/json" \\
+  -H "User-Agent: YMailNorrin" \\
+  -X POST`;
+            
+            // Add JSON body if provided
+            if (postBody && postBody !== "JSON post body goes here") {
+                // Use single quotes to wrap the JSON and escape any single quotes within
+                const escapedBody = postBody.replace(/'/g, "'\"'\"'");
+                curlCommand += ` \\
+  -d '${escapedBody}'`;
+            }
+            
+            curlCommand += ` \\
+  "${url}"`;
+            
+            curlTextarea.value = curlCommand;
+        }
+
+        function copyCurlCommand() {
+            const curlTextarea = document.getElementById("curlCommand");
+            const copyButton = document.querySelector(".copy-button");
+            
+            curlTextarea.select();
+            curlTextarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand("copy");
+                copyButton.textContent = "Copied!";
+                copyButton.classList.add("copied");
+                
+                setTimeout(() => {
+                    copyButton.textContent = "Copy";
+                    copyButton.classList.remove("copied");
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+            
+            // Deselect the text
+            window.getSelection().removeAllRanges();
+        }
+
         function updateConnectionStatus() {
             const statusIndicator = document.getElementById("connectionStatus");
             const api = document.getElementById("apiId").value;
@@ -537,14 +689,52 @@
             return false; // Prevent default form submission
         }
 
+        function doFetchWssid() {
+            let endpoint = "https://apis.mail.yahoo.com/ws/v3/mailboxes";
+            document.getElementById("endpoint").value = endpoint;
+            document.theForm.action = endpoint;
+            // Copy parameters to hidden form
+            const apiForm = document.apiForm;
+            const theForm = document.theForm;
+            
+            apiForm.action = theForm.action;
+            
+            const api = document.getElementById("apiId").value;
+            
+            if (api === "listmessages") {
+                apiForm.q.value = theForm.q.value;
+                apiForm.q.disabled = false;
+            } else {
+                apiForm.q.disabled = true;
+            }
+            
+            // Submit the hidden form
+            apiForm.submit();
+            return false; // Prevent default form submission
+        }
+
+        function toggleAdvanced() {
+            const advancedSections = document.getElementById("advancedSections");
+            const toggleCheckbox = document.getElementById("advancedToggle");
+            
+            if (toggleCheckbox.checked) {
+                advancedSections.classList.remove("hidden");
+                advancedSections.classList.add("fade-in");
+            } else {
+                advancedSections.classList.add("hidden");
+                advancedSections.classList.remove("fade-in");
+            }
+        }
+
         // Add input event listeners for real-time updates
         document.addEventListener('DOMContentLoaded', function() {
-            ['q', 'messageId'].forEach(id => {
+            ['q', 'messageId', 'wssid', 'postBody'].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.addEventListener('input', function() {
                         updateEndpoint();
                         updateConnectionStatus();
+                        updateCurlCommand();
                     });
                 }
             });
